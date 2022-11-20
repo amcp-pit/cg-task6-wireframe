@@ -1,0 +1,21 @@
+name: GitHub Classroom Workflow
+
+on: [push]
+
+jobs:
+  build:
+    name: Autograding
+    runs-on: gtest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: education/autograding@v1
+  memleaks:
+    needs: build
+    name: Memory leaks
+    runs-on: gtest
+    steps:
+      - uses: actions/checkout@v3
+      - run: |
+             g++ ./wireframe.cpp -o wireframe -pedantic-errors 
+      - run: |
+             valgrind --leak-check=full --error-exitcode=101 ./wireframe 800 600 tests/bunny.obj
