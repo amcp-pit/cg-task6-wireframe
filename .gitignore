@@ -5,6 +5,7 @@
 *.slo
 *.lo
 *.o
+*.obj
 
 # Precompiled Headers
 *.gch
@@ -29,3 +30,6 @@
 *.exe
 *.out
 *.app
+
+.vc
+.idea

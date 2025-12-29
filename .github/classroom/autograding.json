@@ -2,7 +2,7 @@
   "tests": [
     {
       "name": "Test 1",
-      "setup": "g++ ./wireframe.cpp -o wireframe -O2 -pedantic-errors",
+      "setup": "",
       "run": "./wireframe 800 600 tests/bunny.obj",
       "input": "",
       "output": "",

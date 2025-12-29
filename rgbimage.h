@@ -53,18 +53,20 @@ class rgbImg {
 		std::swap(width_, other.width_);
 		std::swap(height_, other.height_);
 	}
-	int get_offset(int width) {
-		int offset = 0;
-		if (width % 4)
+	static unsigned int get_offset(unsigned int width) {
+		unsigned int offset = 0;
+		if (width % 4 != 0) {
 			offset = 4 - (3 * width) % 4;
+		}
 		return offset;
 	}
 public:
 	rgbImg(unsigned int width=800, unsigned int height=600): width_(width), height_(height), pixels_(nullptr){
 		RGB zero = { 0, 0, 0 };
 		pixels_ = new RGB * [height_];
-		if (pixels_ == nullptr)  
+		if (pixels_ == nullptr) {  
 			throw std::bad_alloc();
+		}
 		for (unsigned int row = 0; row < height_; ++row) {
 			pixels_[row] = new RGB[width_];
 			if (pixels_[row] == nullptr) {
@@ -79,8 +81,9 @@ public:
 	}
 	rgbImg(const rgbImg& other):width_(other.width_), height_(other.height_), pixels_(nullptr) {
 		pixels_ = new RGB * [height_];
-		if (pixels_ == nullptr)
+		if (pixels_ == nullptr) {
 			throw std::bad_alloc();
+		}
 		for (unsigned int row = 0; row < height_; ++row) {
 			pixels_[row] = new RGB[width_];
 			if (pixels_[row] == nullptr) {
@@ -117,29 +120,33 @@ public:
 	unsigned int width() const { return width_; }
 	unsigned int height() const { return height_; }
 	RGB get(unsigned int column, unsigned int row) const{
-		if (row >= height_)
+		if (row >= height_) {
 			throw std::out_of_range("Larger than image height");
-		if (column >= width_)
+		}
+		if (column >= width_) {
 			throw std::out_of_range("Larger than image width");
+		}
 		return pixels_[row][column];
 	}
 	RGB& get(unsigned int column, unsigned int row) {
-		if (row >= height_)
+		if (row >= height_) {
 			throw std::out_of_range("Larger than image height");
-		if (column >= width_)
+		}
+		if (column >= width_) {
 			throw std::out_of_range("Larger than image width");
+		}
 		return pixels_[row][column];
 	}
 	bool save(const char* filename) {
-		if (pixels_ == nullptr)
+		if (pixels_ == nullptr){
 			return false;
-
+		}
 		std::ofstream outBMP(filename, std::ios_base::binary);
 		if (!outBMP.is_open()) {
 			throw std::runtime_error("Failed to open output file");
 		}
 		
-		const int offset = get_offset(width_);
+		const unsigned int offset = get_offset(width_);
 		BITMAPFILEHEADER bmfh;
 		char bfType[] = { 'B', 'M' };
 		bmfh.bfType = *((WORD*)bfType);
@@ -152,8 +159,8 @@ public:
 
 		BITMAPINFOHEADER bmih;
 		bmih.biSize = sizeof(BITMAPINFOHEADER); // размер структуры в байтах
-		bmih.biWidth = width_;  // ширина в пикселях
-		bmih.biHeight = height_;
+		bmih.biWidth = static_cast<LONG>(width_);  // ширина в пикселях
+		bmih.biHeight = static_cast<LONG>(height_);
 		bmih.biPlanes = 1;		// Всегда должно быть 1
 		bmih.biBitCount = 24;   // Кол-во бит на цвет 0 | 1 | 4 | 8 | 16 | 24 | 32
 		bmih.biCompression = 0;
@@ -165,8 +172,9 @@ public:
 		outBMP.write((char*)&bmih, sizeof(BITMAPINFOHEADER));
 
 		BYTE* offset_array = new BYTE[offset];
-		for (int i = 0; i < offset; ++i)
+		for (unsigned int i = 0; i < offset; ++i) {
 			offset_array[i] = 0;
+		}
 
 		for (unsigned int row = height_; row >0; --row) {
 			for (unsigned int col = 0; col < width_; ++col) {
